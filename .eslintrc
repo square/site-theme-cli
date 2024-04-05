@@ -1,0 +1,104 @@
+{
+	"extends": ["oclif", "oclif-typescript"],
+	"plugins": ["import", "spellcheck"],
+	"rules": {
+		"indent": [
+			"error",
+			"tab",
+			{
+				"SwitchCase": 1,
+				"VariableDeclarator": 1
+			}
+		],
+		"no-trailing-spaces": "error",
+		"eol-last": ["error", "always"],
+		"import/newline-after-import": "error",
+		"semi": ["error", "always"],
+		"object-curly-spacing": ["error", "always"],
+		"camelcase": "off",
+		"no-await-in-loop": "off",
+		"no-warning-comments": "off",
+		"filenames/kebab-case": "off",
+		"unicorn/filename-case": "off",
+		"node/no-missing-import": "off",
+		"object-curly-newline": [
+			"error",
+			{
+				"ObjectPattern": {
+					"multiline": false
+				},
+				"ImportDeclaration": {
+					"multiline": true,
+					"minProperties": 3
+				},
+				"ExportDeclaration": {
+					"multiline": true,
+					"minProperties": 3
+				}
+			}
+		],
+		"max-len": [
+			"error",
+			{
+				"code": 128, // Specify the maximum line length you desire, e.g., 128 characters
+				"ignoreUrls": true,
+				"ignoreTemplateLiterals": true,
+				"ignoreRegExpLiterals": true,
+				"ignoreStrings": true,
+				"ignoreComments": true
+			}
+		],
+		"import/order": [
+			"error",
+			{
+				"groups": [
+					["builtin", "external"],
+					"internal",
+					["parent", "sibling", "index"]
+				],
+				"newlines-between": "never"
+			}
+		]
+	},
+	"parserOptions": {
+		"warnOnUnsupportedTypeScriptVersion": false // for now until we upgrade oclif es-tree typescript dependency
+	},
+	"overrides": [
+		{
+			"files": ["*.ts", "*.tsx"],
+			"rules": {
+				// Other TypeScript-specific rules
+				"no-useless-constructor": "off" // Disable no-useless-constructor for TypeScript
+			}
+		},
+		{
+			"files": ["strings.ts"],
+			"rules": {
+				"spellcheck/spell-checker": [
+					"error",
+					{
+						"comments": true,
+						"strings": true,
+						"identifiers": true,
+						"lang": "en_US",
+						"skipWords": [
+							"async",
+							"await",
+							"cli",
+							"cli's",
+							"cli-ux",
+							"cli-ux's",
+							"cli-uxs",
+							"cli-uxs's",
+							"soignore"
+						],
+						"skipIfMatch": [
+							"^[A-Z]+[a-z]+[A-Z][a-z]+[A-Za-z]*$" // camelCase
+						],
+						"minLength": 3
+					}
+				]
+			}
+		}
+	]
+}

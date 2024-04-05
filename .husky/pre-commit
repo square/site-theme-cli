@@ -1,0 +1,21 @@
+# Can only have this run once, otherwise you get "husky - pre-commit hook exited with code 3 (error)"
+if [ -z "$nvm_set" ]; then
+  export NVM_DIR="$HOME/.nvm"
+
+  # This loads nvm.sh, sets the correct PATH before running hook, and ensures the project version of Node
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+  # If you have an .nvmrc file, we use the relevant node version
+  if [[ -f ".nvmrc" ]]; then
+    nvm use
+  fi
+  readonly nvm_set=1
+  export nvm_set
+fi
+
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run lint
+
+npm run test && npm run coverage:ci && npm run make-coverage-badges && git add 'README.md'
