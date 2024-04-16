@@ -1,16 +1,16 @@
 {
-  "name": "square-online-cli",
+  "name": "site-theme-cli",
   "version": "0.0.0",
-  "description": "Square Online CLI",
+  "description": "Site Theme CLI",
   "author": "Rajiv Puri",
   "bin": {
-    "square-online-cli": "./bin/run.js"
+    "site-theme-cli": "./bin/run.js"
   },
   "type": "module",
-  "homepage": "https://github.com/squareup/ecom-square-online-cli",
+  "homepage": "https://github.com/square/site-theme-cli",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": "https://github.com/squareup/ecom-square-online-cli",
+  "repository": "https://github.com/square/site-theme-cli",
   "files": [
     "/bin",
     "/dist",
@@ -73,8 +73,8 @@
     "vitest": "^0.34.6"
   },
   "oclif": {
-    "bin": "square-online-cli",
-    "dirname": "square-online-cli",
+    "bin": "site-theme-cli",
+    "dirname": "site-theme-cli",
     "commands": "./dist/commands",
     "plugins": [
       "@oclif/plugin-help"
@@ -103,7 +103,7 @@
   "engines": {
     "node": ">=12.0.0"
   },
-  "bugs": "https://github.com/ecom-square-online-cli/issues",
+  "bugs": "https://github.com/square/site-theme-cli/issues",
   "keywords": [
     "oclif"
   ],
