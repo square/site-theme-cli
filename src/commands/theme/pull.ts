@@ -17,13 +17,12 @@ import {
 import log from '../../components/ui/display/Log.js';
 import { strings, substituteValues } from '../../translations/index.js';
 import {
-	confirmPrompt, siteSelectorPrompt, textInputPrompt,
+	confirmPrompt, siteSelectorPrompt, textInputPrompt, themeSelectorPrompt,
 } from '../../components/prompts.js';
 import { runTasksFromManager } from '../../components/tasks.js';
 import { TaskManager } from '../../utilities/sdk/TaskManager/index.js';
 import { checkConfig } from '../../utilities/configuration.js';
-import { Site } from '../../utilities/api/Types.js';
-import { printSimpleList } from '../../components/table.js';
+import { Site, SiteTheme } from '../../utilities/api/Types.js';
 import { BaseCommand } from '../../baseCommand.js';
 
 const commandStrings = strings.commands.theme.pull;
@@ -87,11 +86,6 @@ export default class Pull extends BaseCommand<typeof Pull> {
 				log(bodyStrings.siteNotFound, 'error');
 				return;
 			}
-
-			if (!selectedSite.siteThemeId) {
-				log(bodyStrings.siteNoThemeInstalled, 'error');
-				return;
-			}
 		}
 
 		if (!selectedSite) {
@@ -102,21 +96,19 @@ export default class Pull extends BaseCommand<typeof Pull> {
 				return;
 			}
 
-			const sitesWithThemes = SDK.filterSitesWithThemes(allSites);
-			if (sitesWithThemes.length === 0) {
-				log(bodyStrings.noSitesWithThemesInstalled);
-				const sitesWithoutThemes = SDK.filterSitesWithoutThemes(allSites);
-				const siteTitles = sitesWithoutThemes.map(site => site.siteTitle || '');
-				printSimpleList(bodyStrings.siteTitleList, siteTitles);
-				log(bodyStrings.useInstallCommand);
-				return;
-			}
-
 			selectedSite = await siteSelectorPrompt(
-				sitesWithThemes,
+				allSites,
 				bodyStrings.selectSite,
 			);
 		}
+
+		const customThemes = await sdk.getCustomThemes(selectedSite.id as string);
+		if (customThemes.length === 0) {
+			log(bodyStrings.noCustomThemesFound, 'warn');
+			return;
+		}
+
+		const selectedTheme = (await themeSelectorPrompt(customThemes)) as SiteTheme;
 
 		// 3. Where  would you like to save files.
 		let fullDestinationDir = flags.themeDir;
@@ -145,13 +137,13 @@ export default class Pull extends BaseCommand<typeof Pull> {
 		await prepareDirForPull(fullDestinationDir);
 		// 5. Download the files.
 		// a. Get the list of files.
-		const resources = await sdk.getSiteThemeResources(selectedSite.id as string, selectedSite.siteThemeId as string);
+		const resources = await sdk.getSiteThemeResources(selectedSite.id as string, selectedTheme.id);
 		const fileIgnorer = await FileIgnorer.fromIgnoreFile(fullDestinationDir);
 		// b. Download them in batches.
 		const taskManager = new TaskManager({
 			sdk,
 			siteId: selectedSite.id as string,
-			siteThemeId: selectedSite.siteThemeId as string,
+			siteThemeId: selectedTheme.id,
 			themeDir: fullDestinationDir,
 		});
 

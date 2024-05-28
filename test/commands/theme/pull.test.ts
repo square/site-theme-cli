@@ -31,11 +31,13 @@ describe('pull', () => {
 		},
 	];
 
-	const mockedNonThemedSites = [
+	const mockedCustomThemes = [
 		{
-			id: '3e3432',
-			siteTitle: 'Square Online Site 2',
-			siteThemeId: null,
+			id: '111',
+			name: 'Custom Theme 1',
+			siteId: '12312332',
+			updatedAt: '112323',
+			createdAt: 'asdasd',
 		},
 	];
 
@@ -46,6 +48,13 @@ describe('pull', () => {
 			id: '12312332',
 			siteTitle: 'Square Online Site 1',
 			siteThemeId: '111',
+		}),
+		themeSelectorPrompt: vi.fn().mockResolvedValue({
+			id: '111',
+			name: 'Custom Theme 1',
+			siteId: '12312332',
+			updatedAt: '112323',
+			createdAt: 'asdasd',
 		}),
 		textInputPrompt: vi.fn().mockResolvedValue('./brisk'),
 		confirmPrompt: vi.fn().mockResolvedValueOnce(true).mockResolvedValueOnce(false),
@@ -100,23 +109,16 @@ describe('pull', () => {
 
 	it('Run Pull with no siteId flag', async () => {
 		const getSitesSpy = vi.spyOn(SDK.prototype, 'getSites').mockResolvedValue(mockedSites);
+		const getSiteThemesSpy = vi.spyOn(SDK.prototype, 'getCustomThemes').mockResolvedValue(mockedCustomThemes);
 		const getSiteThemeResourcesSpy = vi.spyOn(SDK.prototype, 'getSiteThemeResources' as never).mockResolvedValue(mockSiteThemeResources);
 
 		await Pull.run([]);
 		expect(getSitesSpy).toHaveBeenCalledOnce();
 		expect(getSiteThemeResourcesSpy).toHaveBeenCalledOnce();
 		expect(downloadThemeFileSpy).toHaveBeenCalled();
+		expect(getSiteThemesSpy).toHaveBeenCalled();
 		expect(prepareDirForPullSpy).toHaveBeenCalled();
 		expect(saveFileSpy).toHaveBeenCalled();
-	});
-
-	it('Run Pull with no sites with themes', async () => {
-		const getSitesSpy = vi.spyOn(SDK.prototype, 'getSites').mockResolvedValue(mockedNonThemedSites);
-		const getSiteThemeResourcesSpy = vi.spyOn(SDK.prototype, 'getSiteThemeResources' as never).mockResolvedValue(mockSiteThemeResources);
-
-		await Pull.run([]);
-		expect(getSitesSpy).toHaveBeenCalledOnce();
-		expect(getSiteThemeResourcesSpy).toHaveBeenCalledTimes(0);
 	});
 
 	afterAll(() => {

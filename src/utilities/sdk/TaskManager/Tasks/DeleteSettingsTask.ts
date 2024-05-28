@@ -5,6 +5,7 @@ export class DeleteSettingsTask extends ResourceTask {
 	async exec(): Promise<void> {
 		await this.sdk.deleteSettings(
 			this.siteId,
+			this.siteThemeId,
 			this.filePath);
 		this.state = TASK_STATES.complete;
 	}

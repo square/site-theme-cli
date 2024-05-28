@@ -4,7 +4,6 @@ import {
 	Box,
 	Text,
 } from 'ink';
-import Spinner from 'ink-spinner';
 import { colors } from '../styles.js';
 import { ResourceTaskSummary } from '../../../utilities/sdk/TaskManager/Types.js';
 import { TASK_STATES } from '../../../utilities/sdk/TaskManager/constants.js';
@@ -27,7 +26,7 @@ const TaskSummaryLine = ({ taskSummary }: {taskSummary: ResourceTaskSummary}): R
 			<Box marginRight={1}>
 				{
 					taskSummary.state === TASK_STATES.pending ?
-						<Text color={colors.info}><Spinner /></Text> : null
+						<Text color={colors.info}>.</Text> : null
 				}
 				{
 					taskSummary.state === TASK_STATES.complete ?

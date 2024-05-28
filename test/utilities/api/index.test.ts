@@ -67,7 +67,7 @@ describe('API Test', () => {
 		const api = new SquareOnlineApi('FAKE_TOKEN', true);
 		vi.spyOn(api, 'axiosRequest').mockResolvedValue(response);
 		const getSpy = vi.spyOn(SquareOnlineApi.prototype, 'listPages');
-		const pages = await api.listPages('1234');
+		const pages = await api.listPages('1234', '111');
 		assert(pages[0].name === 'My Page');
 		expect(getSpy).toHaveBeenCalledOnce();
 	});
@@ -84,7 +84,7 @@ describe('API Test', () => {
 		const api = new SquareOnlineApi('FAKE_TOKEN', true);
 		vi.spyOn(api, 'axiosRequest').mockResolvedValue(response);
 		const getSpy = vi.spyOn(SquareOnlineApi.prototype, 'getPage');
-		const page = await api.getPage('1234', '567');
+		const page = await api.getPage('1234', '111', '567');
 		assert(page.name === pageName);
 		expect(getSpy).toHaveBeenCalledOnce();
 	});
@@ -102,7 +102,7 @@ describe('API Test', () => {
 		vi.spyOn(api, 'axiosRequest').mockResolvedValue(response);
 		const createSpy = vi.spyOn(SquareOnlineApi.prototype, 'createPage');
 		const pagePayload = SDK.genPageUpsertPayloadFromFileContent('foo', '{ "body": "lorum ipsum" }');
-		const page = await api.createPage('1234', pagePayload);
+		const page = await api.createPage('1234', '111', pagePayload);
 		assert(page.name === pageName);
 		expect(createSpy).toHaveBeenCalledOnce();
 	});
@@ -117,7 +117,7 @@ describe('API Test', () => {
 		const api = new SquareOnlineApi('FAKE_TOKEN', true);
 		vi.spyOn(api, 'axiosRequest').mockResolvedValue(response);
 		const getSpy = vi.spyOn(SquareOnlineApi.prototype, 'getGlobalElement');
-		const element = await api.getGlobalElement('1234', 'section', 'My Element') as SiteGlobalElement;
+		const element = await api.getGlobalElement('1234', '111', 'section', 'My Element') as SiteGlobalElement;
 		assert(element.properties === properties);
 		expect(getSpy).toHaveBeenCalledOnce();
 	});
@@ -132,7 +132,7 @@ describe('API Test', () => {
 		const api = new SquareOnlineApi('FAKE_TOKEN', true);
 		vi.spyOn(api, 'axiosRequest').mockResolvedValue(response);
 		const getSpy = vi.spyOn(SquareOnlineApi.prototype, 'listGlobalElements');
-		const elements = await api.listGlobalElements('1234');
+		const elements = await api.listGlobalElements('1234', '111');
 		assert(elements[0].properties === properties);
 		expect(getSpy).toHaveBeenCalledOnce();
 	});

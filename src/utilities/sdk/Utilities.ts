@@ -7,7 +7,6 @@ import {
 } from '../../Types/index.js';
 import {
 	Resource,
-	Site,
 	SiteGlobalElement,
 	SitePage,
 	SiteSetting,
@@ -70,14 +69,6 @@ export default class Utilities {
 
 		// If the path already starts with a '/', return it as is
 		return filePath;
-	}
-
-	static filterSitesWithThemes(sites: Site[]): Site[] {
-		return sites.filter(site => site.siteThemeId);
-	}
-
-	static filterSitesWithoutThemes(sites: Site[]): Site[] {
-		return sites.filter(site => !site.siteThemeId);
 	}
 
 	static removeSlashFromPath(path: string): string {

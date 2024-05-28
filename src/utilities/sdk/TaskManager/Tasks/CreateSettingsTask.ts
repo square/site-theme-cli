@@ -14,6 +14,7 @@ export class CreateSettingsTask extends ResourceTask {
 
 		await this.sdk.createSettings(
 			this.siteId,
+			this.siteThemeId,
 			this.filePath,
 			this.properties as Record<string, any>);
 		this.state = TASK_STATES.complete;

@@ -13,6 +13,7 @@ export class DeleteGlobalElementsTask extends ResourceTask {
 
 		await this.sdk.deleteGlobalElement(
 			this.siteId,
+			this.siteThemeId,
 			this.filePath,
 			this.type as SiteGlobalElementType);
 		this.state = TASK_STATES.complete;

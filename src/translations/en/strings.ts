@@ -38,6 +38,7 @@ const strings = {
 					useInstallCommand: 'Use the "theme install" command to install a theme to your Square Online site.',
 					selectSite: 'Choose which Square Online site you would like to preview',
 					previewChangesPrompt: 'You can preview your changes through the following URL(s):',
+					noCustomThemesFound: 'No custom themes found for this site.',
 				},
 			},
 			install: {
@@ -90,16 +91,20 @@ const strings = {
 					preparingDir: 'Preparing theme directory for download',
 					downloadListTitle: 'Downloading Files',
 					overwriteWarning: 'The files in the directory {destinationDir} will be overwritten. Do you wish to continue?',
+					noCustomThemesFound: 'No custom themes found for this site.',
 				},
 			},
 			push: {
-				description: 'Push your local theme files to your Square Online site. Files with the following patterns will be ignored by default: {ignoreList}, as well as any patterns within the /theme/.soignore file',
+				description: 'Push your local theme files to your Square Online site. Files with the following patterns will be ignored by default: {ignoreList}, as well as any patterns within the /.soignore file',
 				flags: {
 					themeDir: {
 						description: 'Path to theme directory.',
 					},
 					siteId: {
 						description: 'The Square Online site id that you would like to push files to.',
+					},
+					themeId: {
+						description: 'The theme you would like to push files to.',
 					},
 					omitDelete: {
 						description: 'If set the CLI will skip any delete operations during syncing',
@@ -122,6 +127,8 @@ const strings = {
 					siteSelectorPrompt: 'Select the site you would like to push your code to.',
 					themeDirPushPrompt: 'Enter the theme directory you would like to push',
 					themeChanges: 'The following changes will be pushed to your Square Online store:',
+					themeNotFound: 'The theme you are trying to push to does not exist.',
+					noCustomThemesFound: 'No custom themes found for this site.',
 					create: 'Create',
 					update: 'Update',
 					delete: 'Delete',
@@ -135,13 +142,16 @@ const strings = {
 				},
 			},
 			watch: {
-				description: 'Watch your theme directory and automatically upload file changes to Square Online. Files with the following patterns will be ignored by default: {ignoreList} as well as any patterns within the /theme/.soignore file',
+				description: 'Watch your theme directory and automatically upload file changes to Square Online. Files with the following patterns will be ignored by default: {ignoreList} as well as any patterns within the /.soignore file',
 				flags: {
 					themeDir: {
 						description: 'Path to theme directory for watching.',
 					},
 					siteId: {
 						description: 'The id of the Square Online site you would like to sync to.',
+					},
+					themeId: {
+						description: 'The theme you would like to sync files to.',
 					},
 					hotReload: {
 						description: 'Set this flag to print the preview links and enable hot reloading',
@@ -160,6 +170,8 @@ const strings = {
 					siteNotFound: 'Unable to find Square Online site.',
 					selectSitePrompt: 'Select the site you would like to sync your code to.',
 					themeDirPrompt: 'Enter the theme directory you would like to sync',
+					themeNotFound: 'The theme you are trying to sync to does not exist.',
+					noCustomThemesFound: 'No custom themes found for this site.',
 					confirmPushForOutOfSync: 'Your current theme directory is out of sync, would you like to push your changes?',
 					pushTaskFileTitle: 'Pushing Theme Changes',
 					creating: 'Creating',
@@ -202,6 +214,9 @@ const strings = {
 				updating: 'updating',
 				deleting: 'deleting',
 				downloading: 'downloading',
+				completed: 'completed',
+				downloadError: 'error downloading',
+				error: 'error',
 			},
 		},
 		custom: {

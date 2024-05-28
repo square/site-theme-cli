@@ -5,9 +5,8 @@ import { getAccessToken } from '../../utilities/permissions.js';
 import { BaseCommand } from '../../baseCommand.js';
 import { SDK } from '../../utilities/sdk/index.js';
 import { checkConfig } from '../../utilities/configuration.js';
-import { Site } from '../../utilities/api/Types.js';
-import { siteSelectorPrompt } from '../../components/prompts.js';
-import { printSimpleList } from '../../components/table.js';
+import { Site, SiteTheme } from '../../utilities/api/Types.js';
+import { siteSelectorPrompt, themeSelectorPrompt } from '../../components/prompts.js';
 import { getPreviewUrl } from '../../utilities/preview.js';
 import { showLink } from '../../components/ui/display/Link.js';
 import { ONLINE_STORE_CUSTOM_THEME_READ, ONLINE_STORE_SITE_READ } from '../../utilities/api/constants.js';
@@ -62,11 +61,6 @@ export default class Preview extends BaseCommand<typeof Preview> {
 				log(bodyStrings.siteNotFound, 'error');
 				return;
 			}
-
-			if (!selectedSite.siteThemeId) {
-				log(bodyStrings.siteNoThemeInstalled, 'error');
-				return;
-			}
 		}
 
 		if (!selectedSite) {
@@ -77,29 +71,28 @@ export default class Preview extends BaseCommand<typeof Preview> {
 				return;
 			}
 
-			const sitesWithThemes = SDK.filterSitesWithThemes(allSites);
-			if (sitesWithThemes.length === 0) {
-				log(bodyStrings.noSitesWithThemesInstalled);
-				const sitesWithoutThemes = SDK.filterSitesWithoutThemes(allSites);
-				const siteTitles = sitesWithoutThemes.map((site: Site) => site.siteTitle || '');
-				printSimpleList(bodyStrings.siteTitleList, siteTitles);
-				log(bodyStrings.useInstallCommand);
-				return;
-			}
-
 			selectedSite = await siteSelectorPrompt(
-				sitesWithThemes,
+				allSites,
 				bodyStrings.selectSite,
 			);
 		}
 
+		const customThemes = await sdk.getCustomThemes(selectedSite.id as string);
+		if (customThemes.length === 0) {
+			log(bodyStrings.noCustomThemesFound, 'warn');
+			return;
+		}
+
+		const selectedTheme = (await themeSelectorPrompt(customThemes)) as SiteTheme;
+
 		// generate the preview routes
-		const previewRoutes = await sdk.getSiteRoutes(selectedSite.id as string);
+		const previewRoutes = await sdk.getSiteRoutes(selectedSite.id as string, selectedTheme.id as string);
 		log(bodyStrings.previewChangesPrompt);
 		for (const previewRoute of previewRoutes) {
 			const previewRouteUrl = getPreviewUrl(
-                selectedSite.id as string,
-                previewRoute,
+				selectedSite.id as string,
+				selectedTheme.id as string,
+				previewRoute,
 			);
 			showLink(previewRouteUrl);
 		}

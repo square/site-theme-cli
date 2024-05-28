@@ -19,6 +19,7 @@ import {
 	CreateSitePagePayload,
 	GlobalElementFilterQuery,
 	GlobalElementsResponse,
+	MarketTheme,
 	PageResponse,
 	PagesResponse,
 	RawSite,
@@ -34,7 +35,8 @@ import {
 	SitePage,
 	SitesAPIResponse,
 	SiteSetting,
-	Theme,
+	SiteTheme,
+	SiteThemesResponse,
 	ThemeFile,
 	ThemeFileFilterQuery,
 	ThemeFileMeta,
@@ -69,13 +71,28 @@ class SquareOnlineApi extends SquareOnlineRequest {
 		return response.data.sites ? response.data.sites.map((site: RawSite) => convertApiResource(site) as Site) : [];
 	}
 
-	async createTheme(siteId: string): Promise<Theme> {
-		const body = {
+	async getMarketThemes(): Promise<MarketTheme[]> {
+		return [];
+	}
+
+	async getCustomThemes(siteId: string): Promise<SiteTheme[]> {
+		const response = await this.get(THEMES_ENDPOINT(siteId));
+		response.data as SiteThemesResponse;
+		return convertApiResource(response.data.site_themes) as SiteTheme[];
+	}
+
+	async createTheme(siteId: string, baseThemeId?: string, name?: string): Promise<SiteTheme> {
+		const body: any = {
 			idempotency_key: Date.now().toString(),
 		};
+		if (baseThemeId && name) {
+			body.site_theme_id = baseThemeId;
+			body.name = name;
+		}
+
 		const response = await this.post(THEMES_ENDPOINT(siteId), body);
 		response.data as ThemeResponse;
-		return convertApiResource(response.data.theme) as Theme;
+		return convertApiResource(response.data.site_theme) as SiteTheme;
 	}
 
 	async listThemeFiles(siteId: string, siteThemeId: string): Promise<ThemeFileMeta[]> {
@@ -156,14 +173,14 @@ class SquareOnlineApi extends SquareOnlineRequest {
 		// no-op maybe look into errors after
 	}
 
-	async listPages(siteId: string): Promise<SitePage[]> {
+	async listPages(siteId: string, siteThemeId: string): Promise<SitePage[]> {
 		const sitePages: SitePage[] = [];
 		// Todo: move limit to constand after pagination is validated.
 		const limit = 15;
 		let cursor: string | undefined;
 		// eslint-disable-next-line no-constant-condition
 		while (true) {
-			const response = await this.get(PAGES_ENDPOINT(siteId), { limit, cursor });
+			const response = await this.get(PAGES_ENDPOINT(siteId, siteThemeId), { limit, cursor });
 			response.data as PagesResponse;
 			if (!response.data.pages) {
 				break;
@@ -181,38 +198,38 @@ class SquareOnlineApi extends SquareOnlineRequest {
 		return sitePages;
 	}
 
-	async getPage(siteId: string, pageId: string): Promise<SitePage> {
-		const response = await this.get(PAGE_ENDPOINT(siteId, pageId));
+	async getPage(siteId: string, siteThemeId: string, pageId: string): Promise<SitePage> {
+		const response = await this.get(PAGE_ENDPOINT(siteId, siteThemeId, pageId));
 		response.data as PageResponse;
 		return convertApiResource(response.data.page) as SitePage;
 	}
 
-	async createPage(siteId: string, page: Omit<Omit<SitePage, keyof Resource>, 'id' | 'siteId'>): Promise<SitePage> {
+	async createPage(siteId: string, siteThemeId: string, page: Omit<Omit<SitePage, keyof Resource>, 'id' | 'siteId'>): Promise<SitePage> {
 		const body: CreateSitePagePayload = {
 			page,
 			idempotency_key: Date.now().toString(),
 		};
-		const response = await this.post(PAGES_ENDPOINT(siteId), body);
+		const response = await this.post(PAGES_ENDPOINT(siteId, siteThemeId), body);
 		response.data as PageResponse;
 		return convertApiResource(response.data.page) as SitePage;
 	}
 
-	async updatePage(siteId: string, pageId: string, page:Omit<Omit<SitePage, keyof Resource>, 'id' | 'siteId'>): Promise<SitePage> {
+	async updatePage(siteId: string, siteThemeId: string, pageId: string, page:Omit<Omit<SitePage, keyof Resource>, 'id' | 'siteId'>): Promise<SitePage> {
 		const body: UpdateSitePagePayload = {
 			page,
 			idempotency_key: Date.now().toString(),
 		};
-		const response = await this.put(PAGE_ENDPOINT(siteId, pageId), body);
+		const response = await this.put(PAGE_ENDPOINT(siteId, siteThemeId, pageId), body);
 		response.data as PageResponse;
 		return convertApiResource(response.data.page) as SitePage;
 	}
 
-	async deletePage(siteId: string, pageId: string): Promise<void> {
-		this.delete(PAGE_ENDPOINT(siteId, pageId));
+	async deletePage(siteId: string, siteThemeId: string, pageId: string): Promise<void> {
+		this.delete(PAGE_ENDPOINT(siteId, siteThemeId, pageId));
 	}
 
-	async listSettings(siteId: string): Promise<SiteSetting[]> {
-		const response = await this.get(SETTINGS_ENDPOINT(siteId));
+	async listSettings(siteId: string, siteThemeId: string): Promise<SiteSetting[]> {
+		const response = await this.get(SETTINGS_ENDPOINT(siteId, siteThemeId));
 		response.data as SettingsResponse;
 		if (!response.data.settings) {
 			return [];
@@ -221,11 +238,11 @@ class SquareOnlineApi extends SquareOnlineRequest {
 		return response.data.settings.map((setting: SiteSetting) => convertApiResource(setting) as SiteSetting);
 	}
 
-	async getSettings(siteId: string, name: string): Promise<SiteSetting | void> {
+	async getSettings(siteId: string, siteThemeId: string, name: string): Promise<SiteSetting | void> {
 		const query: SettingFilterQuery = {
 			name,
 		};
-		const response = await this.get(SETTINGS_ENDPOINT(siteId), query);
+		const response = await this.get(SETTINGS_ENDPOINT(siteId, siteThemeId), query);
 		response.data as SettingsResponse;
 		if (response.data.settings) {
 			const siteSetting = response.data.settings.find((siteSetting: SiteSetting) => siteSetting.name === name);
@@ -235,25 +252,30 @@ class SquareOnlineApi extends SquareOnlineRequest {
 		}
 	}
 
-	async upsertSettings(siteId: string, name: string, properties: Record<string, any>): Promise<SiteSetting> {
+	async upsertSettings(
+		siteId: string,
+		siteThemeId: string,
+		name: string,
+		properties: Record<string, any>,
+	): Promise<SiteSetting> {
 		const payload: UpsertSettingPayload = {
 			name,
 			properties: JSON.stringify(properties),
 		};
-		const response = await this.post(SETTINGS_ENDPOINT(siteId), payload);
+		const response = await this.post(SETTINGS_ENDPOINT(siteId, siteThemeId), payload);
 		response.data as SettingResponse;
 		return response.data;
 	}
 
-	async deleteSettings(siteId: string, name: string): Promise<void> {
+	async deleteSettings(siteId: string, siteThemeId: string, name: string): Promise<void> {
 		const query: SettingFilterQuery = {
 			name,
 		};
-		await this.delete(SETTINGS_ENDPOINT(siteId), query);
+		await this.delete(SETTINGS_ENDPOINT(siteId, siteThemeId), query);
 	}
 
-	async listGlobalElements(siteId: string): Promise<SiteGlobalElement[]> {
-		const response = await this.get(GLOBAL_ELEMENTS_ENDPOINT(siteId));
+	async listGlobalElements(siteId: string, siteThemeId:string): Promise<SiteGlobalElement[]> {
+		const response = await this.get(GLOBAL_ELEMENTS_ENDPOINT(siteId, siteThemeId));
 		response.data as GlobalElementsResponse;
 		if (!response.data.global_elements) {
 			return [];
@@ -264,11 +286,16 @@ class SquareOnlineApi extends SquareOnlineRequest {
 		);
 	}
 
-	async getGlobalElement(siteId: string, type: SiteGlobalElementType, name: string): Promise<SiteGlobalElement | void> {
+	async getGlobalElement(
+		siteId: string,
+		siteThemeId: string,
+		type: SiteGlobalElementType,
+		name: string,
+	): Promise<SiteGlobalElement | void> {
 		const query = {
 			[type]: name,
 		} as GlobalElementFilterQuery;
-		const response = await this.get(GLOBAL_ELEMENTS_ENDPOINT(siteId), query);
+		const response = await this.get(GLOBAL_ELEMENTS_ENDPOINT(siteId, siteThemeId), query);
 		response.data as GlobalElementsResponse;
 		if (response.data.global_elements) {
 			const globalElement = response.data.global_elements.find((element: SiteGlobalElement) => element.name === name);
@@ -280,6 +307,7 @@ class SquareOnlineApi extends SquareOnlineRequest {
 
 	async upsertGlobalElement(
 		siteId: string,
+		siteThemeId: string,
 		name: string,
 		type: SiteGlobalElementType,
 		properties: Record<any, any>): Promise<SiteGlobalElement> {
@@ -288,16 +316,16 @@ class SquareOnlineApi extends SquareOnlineRequest {
 			type: type.toUpperCase() as any,
 			properties: JSON.stringify(properties),
 		};
-		const response = await this.post(GLOBAL_ELEMENTS_ENDPOINT(siteId), payload);
+		const response = await this.post(GLOBAL_ELEMENTS_ENDPOINT(siteId, siteThemeId), payload);
 		response.data as GlobalElementsResponse;
 		return response.data;
 	}
 
-	async deleteGlobalElement(siteId: string, name: string, type: SiteGlobalElementType): Promise<void> {
+	async deleteGlobalElement(siteId: string, siteThemeId: string, name: string, type: SiteGlobalElementType): Promise<void> {
 		const query = {
 			[type]: name,
 		} as GlobalElementFilterQuery;
-		await this.delete(GLOBAL_ELEMENTS_ENDPOINT(siteId), query);
+		await this.delete(GLOBAL_ELEMENTS_ENDPOINT(siteId, siteThemeId), query);
 	}
 }
 

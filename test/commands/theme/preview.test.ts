@@ -12,6 +12,16 @@ describe('install', () => {
 	vi.mock('../../../src/utilities/permissions.js');
 	vi.mock('../../../src/utilities/configuration.js');
 
+	const mockedCustomThemes = [
+		{
+			id: '111',
+			name: 'Custom Theme 1',
+			siteId: '12312332',
+			updatedAt: '112323',
+			createdAt: 'asdasd',
+		},
+	];
+
 	const getSitesRouteSpy = vi.spyOn(SDK.prototype, 'getSiteRoutes' as never).mockResolvedValue([
 		'/home',
 	]);
@@ -20,7 +30,13 @@ describe('install', () => {
 		siteSelectorPrompt: vi.fn().mockResolvedValue({
 			id: '12312332',
 			siteTitle: 'Square Online Site 1',
-			siteThemeId: '12345',
+		}),
+		themeSelectorPrompt: vi.fn().mockResolvedValue({
+			id: '111',
+			name: 'Custom Theme 1',
+			siteId: '12312332',
+			updatedAt: '112323',
+			createdAt: 'asdasd',
 		}),
 		confirmPrompt: vi.fn().mockResolvedValueOnce(true).mockResolvedValueOnce(false),
 	}));
@@ -29,16 +45,15 @@ describe('install', () => {
 		vi.mocked(checkConfig).mockResolvedValue(undefined);
 		vi.mocked(getAccessToken).mockResolvedValue('FAKE_TOKEN');
 		vi.mocked(checkHasAccessTokenPermission).mockResolvedValue(true);
+		vi.spyOn(SDK.prototype, 'getCustomThemes').mockResolvedValue(mockedCustomThemes);
 		const getSitesSpy = vi.spyOn(SDK.prototype, 'getSites' as never).mockResolvedValue([
 			{
 				id: '12312332',
 				siteTitle: 'Square Online Site 1',
-				siteThemeId: '12345',
 			},
 			{
 				id: '3e3432',
 				siteTitle: 'Square Online Site 2',
-				siteThemeId: '6789',
 			},
 		]);
 		await Preview.run([]);
@@ -72,23 +87,6 @@ describe('install', () => {
 		vi.mocked(checkHasAccessTokenPermission).mockResolvedValue(true);
 		await Preview.run(['--siteId=1']);
 		expect(getSitesSpy).toHaveBeenCalledTimes(0);
-	});
-
-	it('returns when selected site has no theme', async () => {
-		const getSitesSpy = vi.spyOn(SDK.prototype, 'getSites' as never).mockResolvedValue([
-			{
-				id: '12312332',
-				siteTitle: 'Square Online Site 1',
-				siteThemeId: null,
-			},
-		]);
-		vi.mocked(checkConfig).mockResolvedValue(undefined);
-		vi.mocked(getAccessToken).mockResolvedValue('FAKE_TOKEN');
-		vi.mocked(checkHasAccessTokenPermission).mockResolvedValue(true);
-		const logSpy = vi.spyOn(Log, 'default');
-		await Preview.run(['--siteId=12312332']);
-		expect(logSpy).toHaveBeenCalledWith('The Square Online site you have installed does not have a theme installed.', 'error');
-		expect(getSitesSpy).toHaveBeenCalledOnce();
 	});
 
 	afterAll(() => {

@@ -24,11 +24,29 @@ export interface RawSite {
     is_published?: string | null;
     created_at: string;
     updated_at: string;
-    site_theme_id?: string | null
 }
 
-export interface Site extends SquareOnlineSite {
-    siteThemeId?: string | null;
+export type Site = SquareOnlineSite
+
+export interface MarketTheme extends Resource{
+    id: string;
+    name: string;
+
+}
+
+export interface RawSiteTheme extends Resource {
+    id: string;
+    name: string;
+    theme_id: string;
+    site_id: string;
+}
+
+export interface SiteTheme extends Resource {
+    id: string;
+    name: string;
+    customThemeId?: string;
+    definitionalThemeId?: string;
+    siteId: string;
 }
 
 export interface SiteSetting extends Resource {
@@ -157,6 +175,10 @@ export interface ApiResponse {
 }
 export interface SitesAPIResponse extends ApiResponse {
     sites?: RawSite[]
+}
+
+export interface SiteThemesResponse extends ApiResponse {
+    themes: RawSiteTheme[]
 }
 
 export interface ThemeResponse extends ApiResponse {

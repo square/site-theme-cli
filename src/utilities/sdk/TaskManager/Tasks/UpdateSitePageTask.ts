@@ -10,6 +10,7 @@ export class UpdateSitePageTask extends CreateSitePageTask {
 
 		const sitePage = await this.sdk.updateSitePage(
 			this.siteId,
+			this.siteThemeId,
 			this.filePath,
 			this.content as Buffer);
 

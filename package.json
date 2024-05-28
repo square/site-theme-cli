@@ -10,7 +10,6 @@
   "homepage": "https://github.com/square/site-theme-cli",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": "https://github.com/square/site-theme-cli",
   "files": [
     "/bin",
     "/dist",
@@ -31,7 +30,6 @@
     "ink-confirm-input": "^2.0.0",
     "ink-link": "^3.0.0",
     "ink-select-input": "^5.0.0",
-    "ink-spinner": "^5.0.0",
     "ink-text-input": "^5.0.1",
     "istanbul-badges-readme": "^1.8.5",
     "js-yaml": "^4.1.0",

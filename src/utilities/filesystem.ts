@@ -391,7 +391,7 @@ export class ThemeWatcher {
 }
 
 export class FileIgnorer {
-	static ignoreFilePath = '/theme/.soignore';
+	static ignoreFilePath = '/.soignore';
 	static basePatterns: Array<RegExp> = [
 		/_darcs/,
 		/CVS/,

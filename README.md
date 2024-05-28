@@ -1,7 +1,7 @@
   ### Code Coverage
 | Statements                  | Branches                | Functions                 | Lines             |
 | --------------------------- | ----------------------- | ------------------------- | ----------------- |
-| ![Statements](https://img.shields.io/badge/statements-75.6%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-80%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-60%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-75.6%25-red.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-75.25%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-79.15%25-red.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-59.34%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-75.25%25-red.svg?style=flat) |
 
   # Usage
 
@@ -151,7 +151,7 @@ EXAMPLES
 
 ## `site-theme-cli theme push`
 
-Push your local theme files to your Square Online site. Files with the following Patterns will be ignored by default: /_darcs/,/CVS/,/config.yml/,/node_modules/,/.git/,/.DS_Store/, as well as any patterns within the /theme/.soignore file
+Push your local theme files to your Square Online site. Files with the following Patterns will be ignored by default: /_darcs/,/CVS/,/config.yml/,/node_modules/,/.git/,/.DS_Store/, as well as any patterns within the /.soignore file
 
 ```
 USAGE
@@ -171,7 +171,7 @@ GLOBAL FLAGS
 
 DESCRIPTION
   Push your local theme files to your Square Online site. Files with the following Patterns will be ignored by default:
-  /_darcs/,/CVS/,/config.yml/,/node_modules/,/.git/,/.DS_Store/, as well as any patterns within the /theme/.soignore
+  /_darcs/,/CVS/,/config.yml/,/node_modules/,/.git/,/.DS_Store/, as well as any patterns within the /.soignore
   file
 
 EXAMPLES
@@ -180,7 +180,7 @@ EXAMPLES
 
 ## `site-theme-cli theme watch`
 
-Watch your theme directory and automatically upload file changes to Square Online. Files with the following Patterns will be ignored by default: /_darcs/,/CVS/,/config.yml/,/node_modules/,/.git/,/.DS_Store/ as well as any patterns within the /theme/.soignore file
+Watch your theme directory and automatically upload file changes to Square Online. Files with the following Patterns will be ignored by default: /_darcs/,/CVS/,/config.yml/,/node_modules/,/.git/,/.DS_Store/ as well as any patterns within the /.soignore file
 
 ```
 USAGE
@@ -198,7 +198,7 @@ GLOBAL FLAGS
 DESCRIPTION
   Watch your theme directory and automatically upload file changes to Square Online. Files with the following Patterns
   will be ignored by default: /_darcs/,/CVS/,/config.yml/,/node_modules/,/.git/,/.DS_Store/ as well as any patterns
-  within the /theme/.soignore file
+  within the /.soignore file
 
 EXAMPLES
   $ site-theme-cli theme watch

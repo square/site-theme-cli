@@ -8,7 +8,6 @@ import {
 	ONLINE_STORE_CUSTOM_THEME_READ, ONLINE_STORE_SITE_READ, ONLINE_STORE_CUSTOM_THEME_WRITE,
 } from '../../../src/utilities/api/constants.js';
 import * as Log from '../../../src/components/ui/display/Log.js';
-import { strings } from '../../../src/translations/index.js';
 import { checkConfig } from '../../../src/utilities/configuration.js';
 
 describe('push', () => {
@@ -23,6 +22,13 @@ describe('push', () => {
 			id: '12312332',
 			siteTitle: 'Square Online Site 1',
 			siteThemeId: 'asdas',
+		}),
+		themeSelectorPrompt: vi.fn().mockResolvedValue({
+			id: '111',
+			name: 'Custom Theme 1',
+			siteId: '12312332',
+			updatedAt: '112323',
+			createdAt: 'asdasd',
 		}),
 		textInputPrompt: vi.fn().mockResolvedValue('./brisk'),
 		confirmPrompt: vi.fn().mockResolvedValue(true),
@@ -95,20 +101,30 @@ describe('push', () => {
 		updatedAt: '112323',
 	});
 	const deleteThemeFileSpy = vi.spyOn(SDK.prototype, 'deleteThemeFile').mockResolvedValue();
+
+	const mockedCustomThemes = [
+		{
+			id: '111',
+			name: 'Custom Theme 1',
+			siteId: '12312332',
+			updatedAt: '112323',
+			createdAt: 'asdasd',
+		},
+	];
+
 	it('Run Push With no siteId flag', async () => {
 		vi.mocked(checkConfig).mockResolvedValue(undefined);
 		vi.spyOn(SDK.prototype, 'getSites').mockResolvedValue([
 			{
 				id: '12312332',
 				siteTitle: 'Square Online Site 1',
-				siteThemeId: 'asdas',
 			},
 			{
 				id: '3e3432',
 				siteTitle: 'Square Online Site 2',
-				siteThemeId: null,
 			},
 		]);
+		vi.spyOn(SDK.prototype, 'getCustomThemes').mockResolvedValue(mockedCustomThemes);
 		await Push.run([]);
 		expect(deleteThemeFileSpy).toHaveBeenCalled();
 		expect(updateThemeFileSpy).toHaveBeenCalled();
@@ -122,32 +138,6 @@ describe('push', () => {
 		const logSpy = vi.spyOn(Log, 'default');
 		await Push.run([]);
 		expect(logSpy).toHaveBeenCalledWith(errorMsg, 'error');
-	});
-	it('Exits if passed site flag has no theme', async () => {
-		vi.mocked(checkConfig).mockResolvedValue(undefined);
-		vi.spyOn(SDK.prototype, 'getSites').mockResolvedValue([
-			{
-				id: '3e3432',
-				siteTitle: 'Square Online Site 2',
-				siteThemeId: null,
-			},
-		]);
-		const logSpy = vi.spyOn(Log, 'default');
-		await Push.run(['--siteId=3e3432']);
-		expect(logSpy).toHaveBeenCalledWith(strings.commands.theme.push.body.siteNoThemeInstalled, 'error');
-	});
-	it('Exits if no sites have themes', async () => {
-		vi.mocked(checkConfig).mockResolvedValue(undefined);
-		vi.spyOn(SDK.prototype, 'getSites').mockResolvedValue([
-			{
-				id: '3e3432',
-				siteTitle: 'Square Online Site 2',
-				siteThemeId: null,
-			},
-		]);
-		const logSpy = vi.spyOn(Log, 'default');
-		await Push.run([]);
-		expect(logSpy).toHaveBeenCalledWith(strings.commands.theme.push.body.noSitesWithThemesInstalled);
 	});
 
 	afterAll(() => {

@@ -9,6 +9,7 @@ export class UpdateSettingsTask extends CreateSettingsTask {
 
 		await this.sdk.updateSettings(
 			this.siteId,
+			this.siteThemeId,
 			this.filePath,
 			this.properties as Record<string, any>);
 		this.state = TASK_STATES.complete;

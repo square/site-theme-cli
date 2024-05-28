@@ -16,6 +16,7 @@ export class CreateSitePageTask extends ResourceTask {
 
 		const sitePage = await this.sdk.createSitePage(
 			this.siteId,
+			this.siteThemeId,
 			this.filePath,
 			this.content as Buffer);
 		this.state = TASK_STATES.complete;

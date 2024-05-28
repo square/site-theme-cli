@@ -17,12 +17,11 @@ import {
 } from '../../utilities/filesystem.js';
 import { strings, substituteValues } from '../../translations/index.js';
 import {
-	confirmPrompt, siteSelectorPrompt, textInputPrompt,
+	confirmPrompt, siteSelectorPrompt, textInputPrompt, themeSelectorPrompt,
 } from '../../components/prompts.js';
-import { printSimpleList } from '../../components/table.js';
 import { runTasksFromManager } from '../../components/tasks.js';
 import log from '../../components/ui/display/Log.js';
-import { Site } from '../../utilities/api/Types.js';
+import { Site, SiteTheme } from '../../utilities/api/Types.js';
 import { TaskManager } from '../../utilities/sdk/TaskManager/index.js';
 import { checkConfig } from '../../utilities/configuration.js';
 import { BaseCommand } from '../../baseCommand.js';
@@ -47,6 +46,9 @@ export default class Push extends BaseCommand<typeof Push> {
 		}),
 		siteId: Flags.string({
 			description: flagsStrings.siteId.description,
+		}),
+		themeId: Flags.string({
+			description: flagsStrings.themeId.description,
 		}),
 		omitDelete: Flags.boolean({
 			description: flagsStrings.omitDelete.description,
@@ -98,11 +100,6 @@ export default class Push extends BaseCommand<typeof Push> {
 				log(bodyStrings.siteNotFound, 'error');
 				return;
 			}
-
-			if (!selectedSite.siteThemeId) {
-				log(bodyStrings.siteNoThemeInstalled, 'error');
-				return;
-			}
 		}
 
 		// 3. If not siteId is not passed, then get site selector.
@@ -113,23 +110,33 @@ export default class Push extends BaseCommand<typeof Push> {
 				return;
 			}
 
-			const sitesWithThemes = SDK.filterSitesWithThemes(allSites);
-			if (sitesWithThemes.length === 0) {
-				log(bodyStrings.noSitesWithThemesInstalled);
-				const sitesWithoutThemes = SDK.filterSitesWithoutThemes(allSites);
-				const siteTitles = sitesWithoutThemes.map(site => site.siteTitle || '');
-				printSimpleList(bodyStrings.siteTitleList, siteTitles);
-				log(bodyStrings.useInstallCommand);
-				return;
-			}
-
 			selectedSite = await siteSelectorPrompt(
-				sitesWithThemes,
+				allSites,
 				bodyStrings.siteSelectorPrompt,
 			);
 		}
 
-		// 4. Check if a themeDir is present and valid.
+		// 4. Choose a theme
+		let selectedTheme: undefined | SiteTheme;
+		if (flags.themeId) {
+			selectedTheme = await sdk.getTheme(selectedSite.id as string, flags.themeId);
+			if (!selectedTheme) {
+				log(bodyStrings.themeNotFound, 'error');
+				return;
+			}
+		}
+
+		if (!selectedTheme) {
+			const customThemes = await sdk.getCustomThemes(selectedSite.id as string);
+			if (customThemes.length === 0) {
+				log(bodyStrings.noCustomThemesFound, 'warn');
+				return;
+			}
+
+			selectedTheme = (await themeSelectorPrompt(customThemes)) as SiteTheme;
+		}
+
+		// 5. Check if a themeDir is present and valid.
 		let themeDir: string | undefined;
 		if (flags.themeDir) {
 			const valid = await isValidThemeDir(flags.themeDir);
@@ -140,7 +147,7 @@ export default class Push extends BaseCommand<typeof Push> {
 			}
 		}
 
-		// 5. If not, prompt user to enter a theme dir. Analyze and re-prompt if necessary.
+		// 6. If not, prompt user to enter a theme dir. Analyze and re-prompt if necessary.
 		while (!themeDir) {
 			const input = await textInputPrompt(bodyStrings.themeDirPushPrompt);
 			const valid = await isValidThemeDir(input);
@@ -157,11 +164,11 @@ export default class Push extends BaseCommand<typeof Push> {
 		}
 
 		const fileIgnorer = await FileIgnorer.fromIgnoreFile(themeDir);
-		// 6. Analyze theme changes and generate a delta list.
+		// 7. Analyze theme changes and generate a delta list.
 		const localThemeState = await getLocalThemeState(themeDir, fileIgnorer);
 		const remoteThemeState = await sdk.getRemoteThemeState(
 			selectedSite.id as string,
-			selectedSite.siteThemeId as string);
+			selectedTheme.id as string);
 		const deltaObject = SDK.genRemoteDeltaObject(localThemeState, remoteThemeState, flags.omitDelete);
 		if (
 			!SDK.hasChangesToPush(deltaObject)
@@ -170,7 +177,7 @@ export default class Push extends BaseCommand<typeof Push> {
 			return;
 		}
 
-		// 7. Confirm if the user should continue.
+		// 8. Confirm if the user should continue.
 		printDeltaObjectSummary(deltaObject);
 
 		if (!flags.yes) {
@@ -183,13 +190,13 @@ export default class Push extends BaseCommand<typeof Push> {
 		const taskManager = new TaskManager({
 			sdk,
 			siteId: selectedSite.id as string,
-			siteThemeId: selectedSite.siteThemeId as string,
+			siteThemeId: selectedTheme.id as string,
 			themeDir,
 		});
 
 		taskManager.addTasksFromDeltaPushState(deltaObject);
 
-		// 8. Start the push.
+		// 9. Start the push.
 		await runTasksFromManager(bodyStrings.pushFilesTitle, taskManager, 4);
 	}
 }

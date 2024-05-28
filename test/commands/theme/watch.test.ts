@@ -9,7 +9,6 @@ import {
 } from '../../../src/utilities/api/constants.js';
 import * as Log from '../../../src/components/ui/display/Log.js';
 import * as Link from '../../../src/components/ui/display/Link.js';
-import { strings } from '../../../src/translations/index.js';
 import { checkConfig } from '../../../src/utilities/configuration.js';
 
 describe('watch', async () => {
@@ -26,6 +25,13 @@ describe('watch', async () => {
 			id: '12312332',
 			siteTitle: 'Square Online Site 1',
 			siteThemeId: 'asdas',
+		}),
+		themeSelectorPrompt: vi.fn().mockResolvedValue({
+			id: '111',
+			name: 'Custom Theme 1',
+			siteId: '12312332',
+			updatedAt: '112323',
+			createdAt: 'asdasd',
 		}),
 		textInputPrompt: vi.fn().mockResolvedValue('./brisk'),
 		confirmPrompt: vi.fn().mockResolvedValue(true),
@@ -120,19 +126,28 @@ describe('watch', async () => {
 	const deleteThemeFileSpy = vi.spyOn(SDK.prototype, 'deleteThemeFile').mockResolvedValue();
 	const deleteGlobalElementSpy = vi.spyOn(SDK.prototype, 'deleteGlobalElement').mockResolvedValue();
 
+	const mockedCustomThemes = [
+		{
+			id: '111',
+			name: 'Custom Theme 1',
+			siteId: '12312332',
+			updatedAt: '112323',
+			createdAt: 'asdasd',
+		},
+	];
+
 	it('Run watch with exit signal', async () => {
 		vi.spyOn(SDK.prototype, 'getSites').mockResolvedValue([
 			{
 				id: '12312332',
 				siteTitle: 'Square Online Site 1',
-				siteThemeId: 'asdas',
 			},
 			{
 				id: '3e3432',
 				siteTitle: 'Square Online Site 2',
-				siteThemeId: null,
 			},
 		]);
+		vi.spyOn(SDK.prototype, 'getCustomThemes').mockResolvedValue(mockedCustomThemes);
 		await Watch.run([]);
 		expect(deleteThemeFileSpy).toHaveBeenCalled();
 		expect(updateThemeFileSpy).toHaveBeenCalled();
@@ -152,32 +167,18 @@ describe('watch', async () => {
 		expect(logSpy).toHaveBeenCalledWith('Unable to find Square Online site.', 'error');
 	});
 
-	it('Exits if there are no sites with themes', async () => {
-		vi.spyOn(SDK.prototype, 'getSites').mockResolvedValue([
-			{
-				id: '3e3432',
-				siteTitle: 'Square Online Site 2',
-				siteThemeId: null,
-			},
-		]);
-		const logSpy = vi.spyOn(Log, 'default');
-		await Watch.run([]);
-		expect(logSpy).toHaveBeenCalledWith(strings.commands.theme.push.body.useInstallCommand);
-	});
-
 	it('Hot reloads', async () => {
 		vi.spyOn(SDK.prototype, 'getSites').mockResolvedValue([
 			{
 				id: '12312332',
 				siteTitle: 'Square Online Site 1',
-				siteThemeId: 'asdas',
 			},
 			{
 				id: '3e3432',
 				siteTitle: 'Square Online Site 2',
-				siteThemeId: null,
 			},
 		]);
+		vi.spyOn(SDK.prototype, 'getCustomThemes').mockResolvedValue(mockedCustomThemes);
 		const showLinkSpy = vi.spyOn(Link, 'showLink');
 		await Watch.run(['--hotReload']);
 		expect(showLinkSpy).toHaveBeenCalledOnce();

@@ -2,7 +2,9 @@ import { strings } from '../translations/index.js';
 import { getConfirmInput } from './ui/input/Confirm.js';
 import { getTextInput } from './ui/input/TextInput.js';
 import { SelectionItem, getSelect } from './ui/input/Select.js';
-import { Site } from '../utilities/api/Types.js';
+import {
+	MarketTheme, Site, SiteTheme,
+} from '../utilities/api/Types.js';
 
 const translations = strings.components.prompt;
 
@@ -30,6 +32,21 @@ export const siteSelectorPrompt = async (
 		...site, label: site.siteTitle, value: site.id,
 	} as SelectionItem));
 	const selected = await getSelect(siteItems, prompt) as Site&{label?: string, value?: string};
+	delete selected.label;
+	delete selected.value;
+	return selected;
+};
+
+type Theme = MarketTheme | SiteTheme;
+
+export const themeSelectorPrompt = async (
+	themes: Array<Theme>,
+	prompt = 'Select a theme',
+): Promise<Theme> => {
+	const siteItems = themes.map((theme: Theme) => ({
+		...theme, label: theme.name, value: theme.id,
+	} as SelectionItem));
+	const selected = await getSelect(siteItems, prompt) as Theme&{label?: string, value?: string};
 	delete selected.label;
 	delete selected.value;
 	return selected;

@@ -14,6 +14,7 @@ export class UpdateGlobalElementsTask extends CreateGlobalElementsTask {
 
 		await this.sdk.updateGlobalElement(
 			this.siteId,
+			this.siteThemeId,
 			this.filePath,
 			this.type as SiteGlobalElementType,
 			this.properties as Record<string, any>);

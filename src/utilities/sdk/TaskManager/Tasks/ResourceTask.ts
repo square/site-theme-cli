@@ -67,11 +67,27 @@ export abstract class ResourceTask {
 
 	public getTitle(): string {
 		const actionStringMap = {
-			[ACTIONS.create]: strings.components.task.actions.creating,
-			[ACTIONS.update]: strings.components.task.actions.updating,
-			[ACTIONS.delete]: strings.components.task.actions.deleting,
-			[ACTIONS.download]: strings.components.task.actions.downloading,
+			[ACTIONS.create]: {
+				[TASK_STATES.pending]: strings.components.task.actions.creating,
+				[TASK_STATES.complete]: strings.components.task.actions.completed,
+				[TASK_STATES.error]: strings.components.task.actions.error,
+			},
+			[ACTIONS.update]: {
+				[TASK_STATES.pending]: strings.components.task.actions.updating,
+				[TASK_STATES.complete]: strings.components.task.actions.completed,
+				[TASK_STATES.error]: strings.components.task.actions.error,
+			},
+			[ACTIONS.delete]: {
+				[TASK_STATES.pending]: strings.components.task.actions.deleting,
+				[TASK_STATES.complete]: strings.components.task.actions.completed,
+				[TASK_STATES.error]: strings.components.task.actions.error,
+			},
+			[ACTIONS.download]: {
+				[TASK_STATES.pending]: strings.components.task.actions.downloading,
+				[TASK_STATES.complete]: strings.components.task.actions.completed,
+				[TASK_STATES.error]: strings.components.task.actions.downloadError,
+			},
 		};
-		return `${actionStringMap[this.action]} ... ${this.filePath}`;
+		return `${actionStringMap[this.action][this.state]} ... ${this.filePath}`;
 	}
 }
