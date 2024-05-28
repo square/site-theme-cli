@@ -23,7 +23,7 @@ const strings = {
 		},
 		theme: {
 			preview: {
-				description: 'Prints development preview links for Square Online custom theme sites.',
+				description: 'Prints the development preview links for Square Online custom theme sites.',
 				flags: {
 					siteId: {
 						description: 'ID of Square Online site to you would like to preview, use to skip site selector step.',
