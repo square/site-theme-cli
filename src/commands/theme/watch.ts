@@ -188,7 +188,7 @@ export default class Watch extends BaseCommand<typeof Watch> {
 		if (flags.hotReload) {
 			server = new LocalServer(LOCAL_SERVER_PORT);
 			await server.start();
-			const previewRoutes = await sdk.getSiteRoutes(selectedSite.id as string);
+			const previewRoutes = await sdk.getSiteRoutes(selectedSite.id as string, selectedTheme.id as string);
 			log(bodyStrings.previewChangesPrompt);
 			for (const previewRoute of previewRoutes) {
 				const previewRouteUrl = getPreviewUrl(
