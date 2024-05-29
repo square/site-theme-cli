@@ -108,7 +108,7 @@ export default class SDK extends Utilities {
 		return site;
 	}
 
-	async getSiteRoutes(siteId: string, siteThemeId = ''): Promise<string[]> {
+	async getSiteRoutes(siteId: string, siteThemeId: string): Promise<string[]> {
 		const sitePages = await this.apiClient.listPages(siteId, siteThemeId);
 		return sitePages.map(({ route }) => route);
 	}
