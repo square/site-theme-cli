@@ -78,7 +78,7 @@ class SquareOnlineApi extends SquareOnlineRequest {
 	async getCustomThemes(siteId: string): Promise<SiteTheme[]> {
 		const response = await this.get(THEMES_ENDPOINT(siteId));
 		response.data as SiteThemesResponse;
-		return convertApiResource(response.data.site_themes) as SiteTheme[];
+		return response.data.site_themes ? convertApiResource(response.data.site_themes) as SiteTheme[] : [];
 	}
 
 	async createTheme(siteId: string, baseThemeId?: string, name?: string): Promise<SiteTheme> {
