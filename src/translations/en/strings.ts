@@ -68,6 +68,9 @@ const strings = {
 					siteId: {
 						description: 'The Square Online site id that you would like to pull files from.',
 					},
+					themeId: {
+						description: 'The theme id that you would like to pull files from.',
+					},
 					accessToken: {
 						description: 'Use this flag to pass in an access token. If not passed the CLI will look for an access token saved during "auth" command.',
 					},
@@ -86,6 +89,7 @@ const strings = {
 					noSquareOnlineSitesFound: 'No Square Online sites found.',
 					siteNoThemeInstalled: 'The Square Online does not have a theme installed. See "square-online-cli theme install".',
 					siteNotFound: 'Unable to find Square Online site.',
+					themeNotFound: 'Unable to find theme.',
 					selectSite: 'Select the Square Online site theme you would like to copy locally',
 					promptThemeDir: 'Enter the folder you would like your theme files to be downloaded to',
 					preparingDir: 'Preparing theme directory for download',
@@ -104,7 +108,7 @@ const strings = {
 						description: 'The Square Online site id that you would like to push files to.',
 					},
 					themeId: {
-						description: 'The theme you would like to push files to.',
+						description: 'The theme id that you would like to push files to.',
 					},
 					omitDelete: {
 						description: 'If set the CLI will skip any delete operations during syncing',
@@ -127,7 +131,7 @@ const strings = {
 					siteSelectorPrompt: 'Select the site you would like to push your code to.',
 					themeDirPushPrompt: 'Enter the theme directory you would like to push',
 					themeChanges: 'The following changes will be pushed to your Square Online store:',
-					themeNotFound: 'The theme you are trying to push to does not exist.',
+					themeNotFound: 'Unable to find theme.',
 					noCustomThemesFound: 'No custom themes found for this site.',
 					create: 'Create',
 					update: 'Update',

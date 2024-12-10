@@ -1,7 +1,7 @@
   ### Code Coverage
 | Statements                  | Branches                | Functions                 | Lines             |
 | --------------------------- | ----------------------- | ------------------------- | ----------------- |
-| ![Statements](https://img.shields.io/badge/statements-75.25%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-79.36%25-red.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-59.34%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-75.25%25-red.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-75.22%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-79.15%25-red.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-59.34%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-75.22%25-red.svg?style=flat) |
 
   # Usage
 
@@ -129,13 +129,14 @@ Clone Square Online Theme Files Locally
 
 ```
 USAGE
-  $ site-theme-cli theme pull [--verbose] [--siteId <value>] [--accessToken <value>] [--yes] [--themeDir
+  $ site-theme-cli theme pull [--verbose] [--siteId <value>] [--themeId <value>] [--accessToken <value>] [--yes] [--themeDir
     <value>]
 
 FLAGS
   --accessToken=<value>  Use this flag to pass in an access token. If not passed the CLI will look for an access token
                          saved during "auth" command.
   --siteId=<value>       The Square Online site id that you would like to pull files from.
+  --themeId=<value>      The Square Online theme id that you would like to pull files from.
   --themeDir=<value>     Path to theme directory. If the directory does not exist it will be created.
   --yes                  Use this flag to skip the confirmation prompts
 
@@ -155,7 +156,7 @@ Push your local theme files to your Square Online site. Files with the following
 
 ```
 USAGE
-  $ site-theme-cli theme push [--verbose] [--themeDir <value>] [--siteId <value>] [--omitDelete]
+  $ site-theme-cli theme push [--verbose] [--themeDir <value>] [--siteId <value>] [--themeId <value>] [--omitDelete]
     [--accessToken <value>] [--yes]
 
 FLAGS
@@ -163,6 +164,7 @@ FLAGS
                          saved during "auth" command.
   --omitDelete           If set the CLI will skip any delete operations during syncing
   --siteId=<value>       The Square Online site id that you would like to push files to.
+  --themeId=<value>      The Square Online theme id that you would like to push files to.
   --themeDir=<value>     Path to theme directory.
   --yes                  Use this flag to skip the confirmation prompts
 
@@ -208,8 +210,8 @@ EXAMPLES
 # CI/CD Usage
 The `theme pull` and `theme push` commands support automated workflows. Passing in an accessToken flag will skip using any on saved through the `auth` command. `themeDir` flags can be either relative or absolute. `yes` will skip any steps that usually require a user confirmation to continue.
 ```
-site-theme-cli theme pull --siteId=site_693636287506607541 --themeDir=./brisk-theme --accessToken=YOUR_ACCESS_TOKEN --yes
-site-theme-cli theme push --siteId=site_693636287506607541 --themeDir=./brisk-theme --accessToken=YOUR_ACCESS_TOKEN --yes
+site-theme-cli theme pull --siteId=site_693636287506607541 --themeId=site_theme_63ab1ab0-59e1-11ef-8cee-23c1d5cbb712 --themeDir=./brisk-theme --accessToken=YOUR_ACCESS_TOKEN --yes
+site-theme-cli theme push --siteId=site_693636287506607541 --themeId=site_theme_63ab1ab0-59e1-11ef-8cee-23c1d5cbb712 --themeDir=./brisk-theme --accessToken=YOUR_ACCESS_TOKEN --yes
 ```
 
 # Getting Started
