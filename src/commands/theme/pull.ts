@@ -41,6 +41,9 @@ export default class Pull extends BaseCommand<typeof Pull> {
 		siteId: Flags.string({
 			description: flagsStrings.siteId.description,
 		}),
+		themeId: Flags.string({
+			description: flagsStrings.themeId.description,
+		}),
 		accessToken: Flags.string({
 			description: flagsStrings.accessToken.description,
 		}),
@@ -102,15 +105,26 @@ export default class Pull extends BaseCommand<typeof Pull> {
 			);
 		}
 
-		const customThemes = await sdk.getCustomThemes(selectedSite.id as string);
-		if (customThemes.length === 0) {
-			log(bodyStrings.noCustomThemesFound, 'warn');
-			return;
+		let selectedTheme: undefined | SiteTheme;
+		if (flags.themeId) {
+			selectedTheme = await sdk.getTheme(selectedSite.id as string, flags.themeId);
+			if (!selectedTheme) {
+				log(bodyStrings.themeNotFound, 'error');
+				return;
+			}
 		}
 
-		const selectedTheme = (await themeSelectorPrompt(customThemes)) as SiteTheme;
+		if (!selectedTheme) {
+			const customThemes = await sdk.getCustomThemes(selectedSite.id as string);
+			if (customThemes.length === 0) {
+				log(bodyStrings.noCustomThemesFound, 'warn');
+				return;
+			}
 
-		// 3. Where  would you like to save files.
+			selectedTheme = (await themeSelectorPrompt(customThemes)) as SiteTheme;
+		}
+
+		// 3. Where would you like to save files.
 		let fullDestinationDir = flags.themeDir;
 		if (!fullDestinationDir) {
 			fullDestinationDir = await textInputPrompt(bodyStrings.promptThemeDir, 'brisk');
